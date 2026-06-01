@@ -1,4 +1,9 @@
+-- Active: 1780283379047@@127.0.0.1@3306
 -- Create the database container 
+-- Drop the database if it already exists to start completely fresh
+DROP DATABASE IF EXISTS unifil_bus_lines;
+
+-- Create the database container
 CREATE DATABASE unifil_bus_lines;
 
 -- Tell MySQL to use this database for the next commands
@@ -6,7 +11,7 @@ USE unifil_bus_lines;
 
 -- Table to store physical bus vehicles properties
 CREATE TABLE buses (
-    id_bus INT AUTO_INCREMENT
+    id_bus INT AUTO_INCREMENT,
     license_plate VARCHAR(10) NOT NULL,
     color VARCHAR(20),
     total_capacity INT NOT NULL,
@@ -36,13 +41,25 @@ CREATE TABLE trips (
     CONSTRAINT fk_trips_buses FOREIGN KEY (id_bus) REFERENCES buses(id_bus)
 );
 
+-- Table to store client information
+CREATE TABLE clients (
+    id_client INT AUTO_INCREMENT,
+    full_name VARCHAR(100) NOT NULL,
+    cpf VARCHAR(14) NOT NULL,
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    PRIMARY KEY (id_client),
+    CONSTRAINT uk_client_cpf UNIQUE (CPF)
+);
+
 -- Table to manage tickets sales and prevent double-booking
 CREATE TABLE tickets (
     id_ticket INT AUTO_INCREMENT,
     id_trip INT NOT NULL,
     id_seat INT NOT NULL,
-    passenger_name VARCHAR(100) NOT NULL,
-    booking_time DATETIME DEFAULT CURRENT_TIMESTAMP, 
+    id_client INT NOT NULL,
+    booking_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR (20) DEFAULT 'Confirmed',
     PRIMARY KEY (id_ticket),
     CONSTRAINT fk_tickets_trips FOREIGN KEY (id_trip) REFERENCES trips(id_trip),
     CONSTRAINT fk_tickets_seats FOREIGN KEY (id_seat) REFERENCES seats(id_seat),
